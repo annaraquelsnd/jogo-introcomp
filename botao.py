@@ -1,14 +1,18 @@
 import pygame
 
 class Botao():
-    def __init__(self, image, x_pos, y_pos, indice, img_cursor):
+    def __init__(self, image, x_pos, y_pos, indice, img_cursor, personagem):
         self.image = image
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
         self.indice = indice
         self.img_cursor = img_cursor
-        self.img_cursor_rect = img_cursor.get_rect(center=(x_pos, self.rect.y))
+
+        if personagem: 
+            self.img_cursor_rect = img_cursor.get_rect(center=(x_pos, self.rect.y))
+        else:
+            self.img_cursor_rect = img_cursor.get_rect(center=(x_pos, y_pos))
 
     # Render do botao
     def update(self, janela):

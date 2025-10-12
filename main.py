@@ -24,14 +24,21 @@ img_quadro = pygame.transform.scale(img_quadro, (altura/4, altura/4))
 img_cursor = pygame.image.load("images/icon/cursor.png").convert_alpha()
 img_cursor = pygame.transform.scale(img_cursor, (largura/20, altura/20))
 
-bt_personagem1 = bt.Botao(img_quadro, 277, 322, 1, img_cursor)
-bt_personagem2 = bt.Botao(img_quadro, 512, 322, 2, img_cursor)
-bt_personagem3 = bt.Botao(img_quadro, 747, 322, 3, img_cursor)
-bt_personagem4 = bt.Botao(img_quadro, 395, 580, 4, img_cursor)
-bt_personagem5 = bt.Botao(img_quadro, 630, 580, 5, img_cursor)
+bt_personagem1 = bt.Botao(img_quadro, 277, 322, 1, img_cursor, True)
+bt_personagem2 = bt.Botao(img_quadro, 512, 322, 2, img_cursor, True)
+bt_personagem3 = bt.Botao(img_quadro, 747, 322, 3, img_cursor, True)
+bt_personagem4 = bt.Botao(img_quadro, 395, 580, 4, img_cursor, True)
+bt_personagem5 = bt.Botao(img_quadro, 630, 580, 5, img_cursor, True)
 
-# - Lista de botões dos personagens
+# Lista de botões dos personagens
 bt_personagem_lista = [bt_personagem1, bt_personagem2, bt_personagem3, bt_personagem4, bt_personagem5]
+
+# Botão para iniciar batalha
+img_play = pygame.image.load("images/icon/playCinza.png").convert_alpha()
+img_play = pygame.transform.scale(img_play, (altura/20, largura/20))
+img_play_verde = pygame.image.load("images/icon/play.png").convert_alpha()
+img_play_verde = pygame.transform.scale(img_play_verde, (altura/20, largura/20))
+bt_play = bt.Botao(img_play, 985, 730, 6, img_play_verde, False)
 
 img_hunter = pygame.image.load("images/character/hunter.png").convert_alpha()
 img_hunter = pygame.transform.scale(img_hunter, (96, 96))
@@ -96,7 +103,10 @@ def telaInicio():
                 if event.key == pygame.K_LEFT:
                     indice -= 1
                 if event.key == pygame.K_DOWN:
-                    indice += 2
+                    if (indice == 1):
+                        indice += 3
+                    else:
+                        indice +=2
                 if event.key == pygame.K_UP:
                     indice -= 2
                 # Navegação: seleção do botão
@@ -121,7 +131,10 @@ def telaInicio():
                     else:
                         personagens_selecionados.remove(botao.personagem)
 
-            # Adicinar evento de clicar no botão go
+            # Clicar no botão play
+            if bt_play.checkInputCursor(indice) and len(personagens_selecionados) == 3:
+                # Começar batalha
+                print("Começou a batalha")
 
             pressionou = False
 
@@ -138,6 +151,19 @@ def telaInicio():
         janela.blit(img_priest, img_priest_rect)
         janela.blit(img_rogue, img_rogue_rect)
         janela.blit(img_wizard, img_wizard_rect)
+
+        pos_x_selecionados = 930
+        pos_y_selecionados = 745
+
+        # Render dos personagens selecionados pelo jogador
+        for personagem in personagens_selecionados:
+            rect = personagem.imagem.get_rect(center=(pos_x_selecionados,pos_y_selecionados))
+            janela.blit(pygame.transform.scale(personagem.imagem, (64, 64)), rect)
+            pos_x_selecionados -= 55
+
+        # Render do botao play
+        bt_play.update(janela)
+        bt_play.desenharCursor(janela, indice)
 
         pygame.display.update()
 

@@ -11,7 +11,7 @@ altura = 768
 
 janela = pygame.display.set_mode((largura, altura))
 
-img_fundo = pygame.image.load("imagem/fundo/selecao_fundo.webp")
+img_fundo = pygame.image.load("imagem/fundo/selecao_fundo.webp").convert_alpha()
 img_fundo = pygame.transform.scale(img_fundo, (largura, altura))
 
 img_quadro = pygame.image.load("imagem/fundo/quadro.png").convert_alpha()
@@ -79,12 +79,14 @@ def tela_selecao():
             indice = 1
         if indice < 1: 
             indice = 5
-
+        """
         if clicou:
             for bt in bt_personagem_lista:
                 bt.checkForInput(pygame.mouse.get_pos())
                 
             clicou = False
+
+        """
 
         # Renderizacao
 

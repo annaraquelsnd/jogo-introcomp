@@ -6,20 +6,24 @@ class Botao():
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        ###############
         self.indice = indice
         self.img_cursor = img_cursor
-        self.img_cursor_rect = img_cursor.get_rect(center=(x_pos, self.rect.y))
 
-    # Render do botao
     def update(self, janela):
         janela.blit(self.image, self.rect)
-    
-    # Desenha o cursor sobre o botão
+
+    def checkForInput(self, posicao):
+        if posicao[0] in range(self.rect.left, self.rect.right) and posicao[1] in range(self.rect.top, self.rect.bottom):
+            print("Botao pressionado")
+            return True
+        
     def desenharCursor(self, janela, indice):
         if indice == self.indice:
-            janela.blit(self.img_cursor, self.img_cursor_rect)
+            janela.blit(self.img_cursor, (self.rect.x, self.rect.y))
             
-    # Método chamado para verificar se o botão está envolvido na interação
-    def checkInputCursor(self, indice):
-          if indice == self.indice:
-                return True
+    
+    def checkForCursor(self, indice):
+        if indice == self.indice:
+            print("Botao pressionadooo")
+            return True

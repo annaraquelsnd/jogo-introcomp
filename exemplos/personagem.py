@@ -9,6 +9,5 @@ class Personagem():
         self.ataque = ataque
         self.defesa = defesa
 
-    # Render do personagem na tela
     def update(self, janela):
         janela.blit(self.imagem, self.rect)

@@ -4,6 +4,7 @@ import personagem as ps
 
 pygame.init()
 
+# Defines
 clock = pygame.time.Clock()
 fps = 60
 
@@ -11,7 +12,8 @@ largura = 1024
 altura = 768
 
 janela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Batalha")
+
+vida_max = 100
 
 # Imagem de fundo
 img_fundo = pygame.image.load("images/background/bg_batalha.png").convert_alpha()
@@ -60,11 +62,11 @@ img_wizard_rect = img_wizard.get_rect(center=(630, 580))
 icones_lista = [img_hunter, img_paladino, img_priest, img_rogue, img_wizard]
 
 # - Declarando personagens
-hunter = ps.Personagem(img_hunter, 0, 0, 100, 30, 30)
-paladino = ps.Personagem(img_paladino, 0, 0, 100, 30, 30)
-priest = ps.Personagem(img_priest, 0, 0, 100, 30, 30)
-rogue = ps.Personagem(img_rogue, 0, 0, 100, 30, 30)
-wizard = ps.Personagem(img_wizard, 0, 0, 100, 30, 30)
+hunter = ps.Personagem("Hunter", img_hunter, 0, 0, vida_max, 30, 30)
+paladino = ps.Personagem("Paladino", img_paladino, 0, 0, vida_max, 30, 30)
+priest = ps.Personagem("Priest", img_priest, 0, 0, vida_max, 30, 30)
+rogue = ps.Personagem("Rogue", img_rogue, 0, 0, vida_max, 30, 30)
+wizard = ps.Personagem("Wizard", img_wizard, 0, 0, vida_max, 30, 30)
 
 # - Atribuicao de um personagem para cada botão
 bt_personagem1.personagem = hunter
@@ -76,15 +78,8 @@ bt_personagem5.personagem = wizard
 # Lista de personagens selecionados pelo jogador
 personagens_selecionados = []
 
-# Elementos batalha
-img_painel_acoes = pygame.image.load("images/icon/panelActions.png").convert_alpha()
-img_painel_acoes = pygame.transform.scale(img_painel_acoes, (largura, altura))
-
-img_painel_vidas = pygame.image.load("images/icon/panelLifes.png").convert_alpha()
-img_painel_vidas = pygame.transform.scale(img_painel_vidas, (largura, altura))
-
 def telaInicio():
-
+    pygame.display.set_caption("IntroBattle")
     pressionou = False
     indice = 1
 
@@ -134,7 +129,8 @@ def telaInicio():
             # Clicar no botão play
             if bt_play.checkInputCursor(indice) and len(personagens_selecionados) == 3:
                 # Começar batalha
-                print("Começou a batalha")
+                definir_posicao()
+                batalha()
 
             pressionou = False
 
@@ -167,7 +163,42 @@ def telaInicio():
 
         pygame.display.update()
 
+# BATALHA
+
+img_painel_acoes = pygame.image.load("images/icon/panelActions.png").convert_alpha()
+img_painel_acoes = pygame.transform.scale(img_painel_acoes, (largura, altura))
+
+img_painel_vidas = pygame.image.load("images/icon/panelLifes.png").convert_alpha()
+img_painel_vidas = pygame.transform.scale(img_painel_vidas, (largura, altura))
+
+pygame.font.init()
+fonte = pygame.font.Font("fonte/pixel.ttf", 24)
+
+img_inimigo1 = pygame.image.load("images/character/inimigo1.png").convert_alpha()
+img_inimigo1 = pygame.transform.scale(img_inimigo1, (96, 96))
+img_inimigo2 = pygame.image.load("images/character/inimigo2.png").convert_alpha()
+img_inimigo2 = pygame.transform.scale(img_inimigo2, (96, 96))
+
+inimigo1 = ps.Personagem("Inimigo 1", img_inimigo1, 0, 0, 100, 30, 10)
+inimigo2 = ps.Personagem("Inimigo 2", img_inimigo2, 0, 0, 100, 30, 10)
+
+img_vida_borda = pygame.image.load("images/icon/life-indicator-null.png").convert_alpha()
+img_vida_verde = pygame.image.load("images/icon/life-indicator-green.png").convert_alpha()
+img_vida_amarelo = pygame.image.load("images/icon/life-indicator-yellow.png").convert_alpha()
+img_vida_vermelho = pygame.image.load("images/icon/life-indicator-red.png").convert_alpha()
+
+ordem = []
+nomes = []
+
 def batalha():
+
+    pygame.display.set_caption("IntroBattle - Batalha")
+
+    for ps in personagens_selecionados:
+        nomes.append(fonte.render(ps.nome, True, "black"))
+
+    ordem.extend(personagens_selecionados)
+    ordem.extend([inimigo1, inimigo2])
     
     while(True):
         # Clock
@@ -185,8 +216,47 @@ def batalha():
         # Renderizacao
 
         janela.blit(img_fundo, (0,0))
+
+        # - Desenhando os personagens na tela
+        for ps in personagens_selecionados:
+            if (ps.vida > 0):
+                ps.update(janela)
+
+        if inimigo1.vida > 0:
+            inimigo1.update(janela)
+        if inimigo2.vida > 0:
+            inimigo2.update(janela)
+
         janela.blit(img_painel_acoes, (0,0))
+
+        # - Painel de vida 
         janela.blit(img_painel_vidas, (0,0))
+
+        y_nome = 545
+        for nome in nomes:
+            janela.blit(nome, (620, y_nome))
+            y_nome += 65
+
+        y_vida = 555
+        for ps in personagens_selecionados:
+            janela.blit(img_vida_borda, (796, y_vida))
+            if (ps.vida >= 60):
+                janela.blit(pygame.transform.scale(img_vida_verde, ((ps.vida/vida_max)*174, 14)), (801, y_vida+5))
+            elif (ps.vida >= 20):
+                janela.blit(pygame.transform.scale(img_vida_amarelo, ((ps.vida/vida_max)*174, 14)), (801, y_vida+5))
+            else:
+                janela.blit(pygame.transform.scale(img_vida_vermelho, ((ps.vida/vida_max)*174, 14)), (801, y_vida+5))
+
+            y_vida += 65
+
         pygame.display.flip()
+
+def definir_posicao():
+    personagens_selecionados[0].setPosicao(190, 240)
+    personagens_selecionados[1].setPosicao(80, 340)
+    personagens_selecionados[2].setPosicao(190, 440)
+
+    inimigo1.setPosicao(830, 240)
+    inimigo2.setPosicao(770, 400)
 
 telaInicio()
